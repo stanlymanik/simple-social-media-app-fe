@@ -1,7 +1,37 @@
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import axios from "../utils/AxiosInstance";
+
+export type RegisterInput = {
+  email: string;
+  username: string;
+  password: string;
+};
 
 export const Register = () => {
   const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<RegisterInput>();
+  const handleRegister = async (data: RegisterInput) => {
+    try {
+      await axios.post("/api/auth/register", {
+        email: data.email,
+        username: data.username,
+        password: data.password
+      });
+      alert("User successfully registered");
+      navigate("/login");
+    } catch (err) {
+      alert("Username or email already registered");
+    }
+  };
+  const { mutate, isPending } = useMutation({ mutationFn: handleRegister });
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-md">
@@ -9,7 +39,10 @@ export const Register = () => {
           Create an Account
         </h2>
 
-        <form className="space-y-5">
+        <form
+          className="space-y-5"
+          onSubmit={handleSubmit((data) => mutate(data))}
+        >
           <div>
             <label
               htmlFor="username"
@@ -23,7 +56,14 @@ export const Register = () => {
               required
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               placeholder="yourusername"
+              {...register("username")}
             />
+
+            {errors.username && (
+              <p className="text-red-600 text-xs italic" id="titleError">
+                Username is required.
+              </p>
+            )}
           </div>
 
           <div>
@@ -39,7 +79,13 @@ export const Register = () => {
               required
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               placeholder="you@example.com"
+              {...register("email")}
             />
+            {errors.email && (
+              <p className="text-red-600 text-xs italic" id="titleError">
+                Email is required.
+              </p>
+            )}
           </div>
 
           <div>
@@ -55,7 +101,13 @@ export const Register = () => {
               required
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               placeholder="••••••••"
+              {...register("password")}
             />
+            {errors.password && (
+              <p className="text-red-600 text-xs italic" id="titleError">
+                Password is required.
+              </p>
+            )}
           </div>
 
           <div>
