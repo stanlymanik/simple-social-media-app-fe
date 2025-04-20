@@ -32,9 +32,9 @@ const PostCard = ({ title, content, image_url }: PostType) => {
 
 const Post = () => {
   const { getToken } = useAuth();
-  const { isLoading, data } = useQuery({
+  const { data } = useQuery({
     queryKey: ["postList"],
-    queryFn: (data) => fetchPostList(getToken())
+    queryFn: () => fetchPostList(getToken())
   });
   return (
     <div className="space-y-6 p-4">
